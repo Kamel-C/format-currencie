@@ -10,20 +10,21 @@ class Internationalize {
   // It gets the currency from an object stored in CountriesCurrencies.ts
   static getCountryCurrency(language) {
     let currencyCode;
-    language =
+    let countryCode =
       language || language === undefined ? language : this.BROWSER_COUNTRY;
 
-    if (language.length > 2) {
-      language = language.slice(3).toUpperCase();
+    if (countryCode.length > 2) {
+      countryCode = countryCode.slice(3).toUpperCase();
     } else {
-      language = language.toUpperCase();
+      countryCode = countryCode.toUpperCase();
     }
 
     Object.keys(currencyList).forEach((key) => {
-      if (key.toString() === language) {
+      if (key.toString() === countryCode) {
         currencyCode = currencyList[key];
         return currencyCode;
       }
+      return null;
     });
     return currencyCode;
   }
@@ -35,10 +36,17 @@ class Internationalize {
 
   // It format the currency
   static formatCurrency(value, locale, currency) {
-    return new Intl.NumberFormat(locale, {
+    if (value % 1 === 0) {
+      return value.toLocaleString(locale, {
+        style: "currency",
+        currency,
+      });
+    }
+    return value.toLocaleString(locale, {
       style: "currency",
       currency,
-    }).format(value);
+      minimumFractionDigits: 2,
+    });
   }
 
   // To be used with the customer browser.
